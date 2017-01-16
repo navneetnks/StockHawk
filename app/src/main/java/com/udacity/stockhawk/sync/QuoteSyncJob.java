@@ -8,7 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.PrefUtils;
 
@@ -40,7 +45,7 @@ public final class QuoteSyncJob {
     private QuoteSyncJob() {
     }
 
-    static void getQuotes(Context context) {
+    static void getQuotes(final Context context) {
 
         Timber.d("Running sync job");
 
@@ -69,12 +74,23 @@ public final class QuoteSyncJob {
             ArrayList<ContentValues> quoteCVs = new ArrayList<>();
 
             while (iterator.hasNext()) {
-                String symbol = iterator.next();
+                final String symbol = iterator.next();
 
 
                 Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
+                // checking for valid stock
+                if (quote.getPrice() == null) {
 
+                    Log.d("First", "No record found");
+                    PrefUtils.removeStock(context, symbol);
+                    new Handler(Looper.getMainLooper()).post(new Runnable() {
+                        public void run() {
+                            Toast.makeText(context, context.getString(R.string.invalid_stock, symbol), Toast.LENGTH_LONG).show();
+                        }
+                    });
+                    continue;
+                }
                 float price = quote.getPrice().floatValue();
                 float change = quote.getChange().floatValue();
                 float percentChange = quote.getChangeInPercent().floatValue();
