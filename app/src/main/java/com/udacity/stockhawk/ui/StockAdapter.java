@@ -28,10 +28,12 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
     private final DecimalFormat percentageFormat;
     private Cursor cursor;
     private final StockAdapterOnClickHandler clickHandler;
+    private final TextView emptyTextView;
 
-    StockAdapter(Context context, StockAdapterOnClickHandler clickHandler) {
+    StockAdapter(Context context, StockAdapterOnClickHandler clickHandler, TextView errorTextView) {
         this.context = context;
         this.clickHandler = clickHandler;
+        this.emptyTextView = errorTextView;
 
         dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
         dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
@@ -45,7 +47,10 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
     void setCursor(Cursor cursor) {
         this.cursor = cursor;
         notifyDataSetChanged();
+        emptyTextView.setVisibility(getItemCount() == 0? View.VISIBLE:View.GONE);
     }
+
+
 
     String getSymbolAtPosition(int position) {
 
