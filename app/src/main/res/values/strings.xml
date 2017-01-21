@@ -33,4 +33,7 @@
     <string name="toast_no_connectivity">Will refresh when network available.</string>
     <string name="invalid_stock">No Stock exists for symbol %s </string>
     <string name="fab_content_description">Add Stock</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
