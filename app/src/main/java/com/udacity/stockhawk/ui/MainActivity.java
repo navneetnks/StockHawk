@@ -1,19 +1,24 @@
 package com.udacity.stockhawk.ui;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,6 +36,7 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity implements
         SwipeRefreshLayout.OnRefreshListener, MainFragment.OnFragmentInteractionListener{
+    private static final String DETAILFRAGMENT_TAG="DFTAG";
 
     @SuppressWarnings("WeakerAccess")
     @BindView(R.id.swipe_refresh)
@@ -141,7 +147,30 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onItemSelected(Uri contentUri) {
+        Log.d("onItemSelected",contentUri.toString());
+        if (mTwoPane) {
+            // In two-pane mode, show the detail view in this activity by
+            // adding or replacing the detail fragment using a
+            // fragment transaction.
+            Bundle args = new Bundle();
+            args.putParcelable(StockDetailFragment.DETAIL_URI, contentUri);
 
+            StockDetailFragment fragment = new StockDetailFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.stock_detail_container, fragment, DETAILFRAGMENT_TAG)
+                    .commit();
+        } else {
+            Intent intent = new Intent(this, StockDetailActivity.class)
+                    .setData(contentUri);
+
+//            ActivityOptionsCompat activityOptions =
+//                    ActivityOptionsCompat.makeSceneTransitionAnimation(this,
+//                            new Pair<View, String>(vh.mIconView, getString(R.string.detail_icon_transition_name)));
+//            ActivityCompat.startActivity(this, intent, activityOptions.toBundle());
+            startActivity(intent);
+        }
     }
 }

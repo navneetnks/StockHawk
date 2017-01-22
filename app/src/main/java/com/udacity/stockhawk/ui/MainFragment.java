@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -91,6 +92,12 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        getActivity().getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -100,14 +107,14 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
         adapter = new StockAdapter(getActivity(), new StockAdapter.StockAdapterOnClickHandler() {
             @Override
             public void onClick(String symbol) {
-                // TODO: handle onclick event
+                ((MainActivity)getActivity()).onItemSelected(Contract.Quote.makeUriForStock(symbol));
             }
         },error);
 
         stockRecyclerView.setAdapter(adapter);
 
 
-        getActivity().getSupportLoaderManager().initLoader(STOCK_LOADER, null, this);
+
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
             @Override
             public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
@@ -130,7 +137,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onItemSelected(uri);
         }
     }
 
@@ -186,7 +193,7 @@ public class MainFragment extends Fragment implements LoaderManager.LoaderCallba
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onItemSelected(Uri uri);
     }
 
 //    @Override
